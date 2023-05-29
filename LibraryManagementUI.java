@@ -107,25 +107,115 @@ public class LibraryManagementUI {
     
         if (option == JOptionPane.OK_OPTION) {
             String author = authorField.getText();
-            if (author.isEmpty()) {
+            // if (author.isEmpty()) {
+            //     JOptionPane.showMessageDialog(null, "Author cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            //     return;
+            // }
+
+            // if (isNumeric(author)) {
+            //     JOptionPane.showMessageDialog(null, "Invalid search term for author. Please enter a string.", "Error", JOptionPane.ERROR_MESSAGE);
+            //     return;
+            // }
+
+            // String isbn = isbnField.getText();
+            // if (isbn.isEmpty()) {
+            //     JOptionPane.showMessageDialog(null, "ISBN cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            //     return;
+            // }
+                    
+            // if (!isNumeric(isbn)) {
+            //     JOptionPane.showMessageDialog(null, "Invalid search term for ISBN. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
+            //     return;
+            // }
+
+            while (author.isEmpty() && option == JOptionPane.OK_OPTION){
                 JOptionPane.showMessageDialog(null, "Author cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                
+                authorField.setText("");
+
+                inputPanel = new JPanel();
+                inputPanel.setLayout(new BorderLayout());
+                inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
+                inputPanel.add(authorField, BorderLayout.CENTER);
+                inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
+                inputPanel.add(isbnField, BorderLayout.SOUTH);
+            
+                option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+
+                author = authorField.getText();
+
+                if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION){
+                    return;
+                }
             }
 
-            if (isNumeric(author)) {
+            
+            while (isNumeric(author) && option == JOptionPane.OK_OPTION){
                 JOptionPane.showMessageDialog(null, "Invalid search term for author. Please enter a string.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                
+                authorField.setText("");
+
+                inputPanel = new JPanel();
+                inputPanel.setLayout(new BorderLayout());
+                inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
+                inputPanel.add(authorField, BorderLayout.CENTER);
+                inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
+                inputPanel.add(isbnField, BorderLayout.SOUTH);
+            
+                option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+
+                author = authorField.getText();
+
+                if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION){
+                    return;
+                }
             }
     
             String isbn = isbnField.getText();
-            if (isbn.isEmpty()) {
+            while (isbn.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "ISBN cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                
+                isbnField.setText("");
+
+                inputPanel = new JPanel();
+                inputPanel.setLayout(new BorderLayout());
+                inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
+                inputPanel.add(authorField, BorderLayout.CENTER);
+                inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
+                inputPanel.add(isbnField, BorderLayout.SOUTH);
+            
+                option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+
+                isbn = isbnField.getText();
+            
+                if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION){
+                    return;
+                }
             }
                     
-            if (!isNumeric(isbn)) {
+            while (!isNumeric(isbn)) {
                 JOptionPane.showMessageDialog(null, "Invalid search term for ISBN. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                
+                isbnField.setText("");
+                
+                inputPanel = new JPanel();
+                inputPanel.setLayout(new BorderLayout());
+                inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
+                inputPanel.add(authorField, BorderLayout.CENTER);
+                inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
+                inputPanel.add(isbnField, BorderLayout.SOUTH);
+            
+                option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+
+                isbn = isbnField.getText();
+            
+                if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION){
+                    return;
+                }
             }
     
             Book book = new Book(title, author, isbn);
