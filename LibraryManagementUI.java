@@ -94,10 +94,10 @@ public class LibraryManagementUI {
         searchBookButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String searchTerm = bookTitleField.getText();
-                SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
+                // String searchTerm = bookTitleField.getText();
+                // SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
                 
-                searchBook(searchTerm, searchType);
+                searchBook();
             }
         });
 
@@ -118,10 +118,10 @@ public class LibraryManagementUI {
         removeBookButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String searchTerm = bookTitleField.getText();
-                SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
+                // String searchTerm = bookTitleField.getText();
+                // SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
                 
-                removeBook(searchTerm, searchType);
+                removeBook();
             }
         });
 
@@ -196,24 +196,52 @@ public class LibraryManagementUI {
         addBookFrame.setVisible(true);
     }    
 
-    private void searchBook(String searchTerm, SearchType searchType) {
-        if (searchTerm.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Search term cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    private void searchBook(/*String searchTerm, SearchType searchType*/) {
+        Object[] options = {"Title", "ISBN"};
+        int choice = JOptionPane.showOptionDialog(null, "Choose search method:", "Borrow Book",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
     
-        if (searchType == SearchType.AUTHOR && isNumeric(searchTerm)) {
-            JOptionPane.showMessageDialog(null, "Invalid search term for author. Please enter a string.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-    
-        if (searchType == SearchType.ISBN && !isNumeric(searchTerm)) {
-            JOptionPane.showMessageDialog(null, "Invalid search term for ISBN. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        if (choice == JOptionPane.CLOSED_OPTION) {
+            return; // Return to main window if "Cancel" is clicked
         }
 
+
+        String searchValue = "";
+        SearchType searchType;
+    
+        while (true) {
+            if (choice == 0) {
+                searchType = SearchType.TITLE;
+                searchValue = JOptionPane.showInputDialog(null, "Enter book title:");
+    
+                if (searchValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue; // Retry input
+                }
+                if (searchType == SearchType.TITLE && isNumeric(searchValue)) {
+                    JOptionPane.showMessageDialog(null, "Invalid search term for title. Please enter a string.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+            } else {
+                searchType = SearchType.ISBN;
+                searchValue = JOptionPane.showInputDialog(null, "Enter book ISBN:");
+    
+                if (searchValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue; // Retry input
+                }
+                if (searchType == SearchType.ISBN && !isNumeric(searchValue)) {
+                    JOptionPane.showMessageDialog(null, "Invalid search term for ISBN. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+            }
+    
+            break; // Exit the loop if valid input is provided
+        }
+
+
         // Perform search logic
-        List<Book> foundBooks = library.findBooks(searchTerm, searchType);
+        List<Book> foundBooks = library.findBooks(searchValue, searchType);
         // Book foundBook = null;
         // for (Book book : library.getBooks()) {
         //     if (book.getTitle().equalsIgnoreCase(bookTitle)) {
@@ -255,7 +283,7 @@ public class LibraryManagementUI {
                 searchType = SearchType.TITLE;
                 searchValue = JOptionPane.showInputDialog(null, "Enter book title:");
     
-                if (searchValue == null || searchValue.isEmpty()) {
+                if (searchValue.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
                     continue; // Retry input
                 }
@@ -263,7 +291,7 @@ public class LibraryManagementUI {
                 searchType = SearchType.ISBN;
                 searchValue = JOptionPane.showInputDialog(null, "Enter book ISBN:");
     
-                if (searchValue == null || searchValue.isEmpty()) {
+                if (searchValue.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
                     continue; // Retry input
                 }
@@ -423,20 +451,54 @@ public class LibraryManagementUI {
         }
     }
 
-    private void removeBook(String title, SearchType searchType){
-        if (title.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Title cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (searchType != SearchType.ISBN) {
-            JOptionPane.showMessageDialog(null, "Please enter the ISBN of the book to remove", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+    private void removeBook(/*String title, SearchType searchType*/){
+        Object[] options = {"Title", "ISBN"};
+        int choice = JOptionPane.showOptionDialog(null, "Choose search method:", "Borrow Book",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+    
+        if (choice == JOptionPane.CLOSED_OPTION) {
+            return; // Return to main window if "Cancel" is clicked
         }
 
+
+        String searchValue = "";
+        SearchType searchType;
+    
+        while (true) {
+            if (choice == 0) {
+                searchType = SearchType.TITLE;
+                searchValue = JOptionPane.showInputDialog(null, "Enter book title:");
+    
+                if (searchValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue; // Retry input
+                }
+                if (searchType == SearchType.TITLE && isNumeric(searchValue)) {
+                    JOptionPane.showMessageDialog(null, "Invalid search term for title. Please enter a string.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+            } else {
+                searchType = SearchType.ISBN;
+                searchValue = JOptionPane.showInputDialog(null, "Enter book ISBN:");
+    
+                if (searchValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue; // Retry input
+                }
+                if (searchType == SearchType.ISBN && !isNumeric(searchValue)) {
+                    JOptionPane.showMessageDialog(null, "Invalid search term for ISBN. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+            }
+    
+            break; // Exit the loop if valid input is provided
+        }
+
+
         // if title is not empty and searcg type is ISBN, check whether book is exist with ISBN.
-        List<Book> foundBooks = library.findBooks(title, searchType);
+        List<Book> foundBooks = library.findBooks(searchValue, searchType);
         if(!foundBooks.isEmpty()){
-            library.removeBook(title); // remove by ISBN
+            library.removeBook(searchValue); // remove by ISBN
             JOptionPane.showMessageDialog(null, "Remove Book successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         }else{
             JOptionPane.showMessageDialog(null, "Book not found. Please retype the ISBN.", "Error", JOptionPane.ERROR_MESSAGE);
