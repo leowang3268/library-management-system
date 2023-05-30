@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import java.net.URL;
+// import java.net.URL;
 import javax.swing.*;
 import java.awt.*;
 
@@ -19,6 +19,7 @@ public class LibraryManagementUI {
 
     // private LibraryManagementSystem libraryManagementSystem;
     private Library library;
+    private JFrame frame;
     JComboBox<String> searchTypeDropdown;
     JTextField bookTitleField;
 
@@ -27,40 +28,70 @@ public class LibraryManagementUI {
     }
 
     public void createAndShowUI() {
-        JFrame frame = new JFrame("Library Management System");
+        frame = new JFrame("Library Management System");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout());
 
 
         JLabel titleLabel = new JLabel("Library Management System");
-        JLabel bookTitleLabel = new JLabel("Book Title:");
-        bookTitleField = new JTextField(20);
-        JButton addButton = new JButton("Add Book");
-        JButton searchButton = new JButton("Search Book");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        // JPanel inputPanel = new JPanel(new BorderLayout());
+        // JLabel bookTitleLabel = new JLabel("Book Title:");
+        // bookTitleField = new JTextField(20);
+        // inputPanel.add(bookTitleLabel, BorderLayout.WEST);
+        // inputPanel.add(bookTitleField, BorderLayout.CENTER);
+
+
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        JLabel searchTypeLabel = new JLabel("Search Type:");
+        String[] searchTypes = {"Title", "Author", "ISBN"};
+        searchTypeDropdown = new JComboBox<>(searchTypes);
+        JButton searchBookButton = new JButton("Search Book");
+        searchPanel.add(searchTypeLabel, BorderLayout.WEST);
+        searchPanel.add(searchTypeDropdown, BorderLayout.CENTER);
+        searchPanel.add(searchBookButton, BorderLayout.EAST);
+
+        JPanel buttonPanel = new JPanel(new BorderLayout());
         JButton borrowButton = new JButton("Borrow Book");
         JButton returnButton = new JButton("Return Book");
+        buttonPanel.add(borrowButton, BorderLayout.NORTH);
+        buttonPanel.add(returnButton, BorderLayout.SOUTH);
+
+        JPanel bookPanel = new JPanel(new BorderLayout());
+        JButton addBookButton = new JButton("Add Book");
+        // JButton searchBookButton = new JButton("Search Book");
         JButton removeBookButton = new JButton("Remove Book");
+        bookPanel.add(addBookButton, BorderLayout.NORTH);
+        // patronPanel.add(searchPatronButton, BorderLayout.CENTER);
+        bookPanel.add(removeBookButton, BorderLayout.SOUTH);
 
+        JPanel patronPanel = new JPanel(new BorderLayout());
+        JButton addPatronButton = new JButton("Add Patron");
+        JButton searchPatronButton = new JButton("Search Patron");
+        JButton removePatronButton = new JButton("Remove Patron");
+        patronPanel.add(addPatronButton, BorderLayout.NORTH);
+        patronPanel.add(searchPatronButton, BorderLayout.CENTER);
+        patronPanel.add(removePatronButton, BorderLayout.SOUTH);
 
-        
-        searchTypeDropdown = new JComboBox<>();
-        searchTypeDropdown.addItem("Title");
-        searchTypeDropdown.addItem("Author");
-        searchTypeDropdown.addItem("ISBN");
-                
+        panel.add(titleLabel, BorderLayout.NORTH);
+        // panel.add(inputPanel, BorderLayout.CENTER);
+        panel.add(searchPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+        panel.add(bookPanel, BorderLayout.WEST);
+        panel.add(patronPanel, BorderLayout.EAST);
 
-
-        addButton.addActionListener(new ActionListener() {
+        addBookButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String bookTitle = bookTitleField.getText();
-                addBook(bookTitle);
+                // String bookTitle = bookTitleField.getText();
+                addBook();
             }
         });
 
-        searchButton.addActionListener(new ActionListener() {
+        searchBookButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String searchTerm = bookTitleField.getText();
@@ -73,9 +104,6 @@ public class LibraryManagementUI {
         borrowButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String searchTerm = bookTitleField.getText();
-                // SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
-                
                 borrowBook();
             }
         });
@@ -83,9 +111,6 @@ public class LibraryManagementUI {
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String searchTerm = bookTitleField.getText();
-                // SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
-                
                 returnBook();
             }
         });
@@ -99,28 +124,27 @@ public class LibraryManagementUI {
                 removeBook(searchTerm, searchType);
             }
         });
-        
-        JPanel inputPanel = new JPanel(new BorderLayout());
-        inputPanel.add(bookTitleLabel, BorderLayout.WEST);
-        inputPanel.add(bookTitleField, BorderLayout.CENTER);
 
-        JPanel searchPanel = new JPanel();
-        searchPanel.setLayout(new BorderLayout());
-        searchPanel.add(new JLabel("Search Type:"), BorderLayout.WEST);
-        searchPanel.add(searchTypeDropdown, BorderLayout.CENTER);
+        addPatronButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {                
+                addPatron();
+            }
+        });
 
-        JPanel buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.add(addButton, BorderLayout.NORTH);
-        buttonPanel.add(borrowButton, BorderLayout.WEST);
-        buttonPanel.add(returnButton, BorderLayout.SOUTH);
-        buttonPanel.add(removeBookButton, BorderLayout.EAST);
-        
+        searchPatronButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchPatron();
+            }
+        });
 
-        panel.add(titleLabel, BorderLayout.NORTH);
-        panel.add(inputPanel, BorderLayout.CENTER);
-        panel.add(searchButton, BorderLayout.SOUTH);
-        panel.add(searchPanel, BorderLayout.EAST);
-        panel.add(buttonPanel, BorderLayout.WEST);
+        removePatronButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {                
+                removePatron();
+            }
+        });
 
         frame.getContentPane().add(panel);
         frame.pack();
@@ -128,163 +152,49 @@ public class LibraryManagementUI {
     }
     
 
-    private void addBook(String title) {
-        if (title.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Title cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    private void addBook() {
+        JFrame addBookFrame = new JFrame("Add Book");
+        addBookFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JPanel addBookPanel = new JPanel();
+        addBookPanel.setLayout(new GridLayout(4, 2));
+
+        JLabel titleLabel = new JLabel("Title:");
+        JTextField titleField = new JTextField();
+        JLabel authorLabel = new JLabel("Author:");
+        JTextField authorField = new JTextField();
+        JLabel isbnLabel = new JLabel("ISBN:");
+        JTextField isbnField = new JTextField();
     
-        JTextField authorField = new JTextField(20);
-        JTextField isbnField = new JTextField(20);
-    
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new BorderLayout());
-        inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
-        inputPanel.add(authorField, BorderLayout.CENTER);
-        inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
-        inputPanel.add(isbnField, BorderLayout.SOUTH);
-    
-        int option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-    
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String title = titleField.getText();
+                String author = authorField.getText();
+                String isbn = isbnField.getText();
 
-        if (option == JOptionPane.OK_OPTION) {
-            String author = authorField.getText();
-            // if (author.isEmpty()) {
-            //     JOptionPane.showMessageDialog(null, "Author cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-            //     return;
-            // }
+                Book book = new Book(title, author, isbn);
+                library.addBook(book);
 
-            // if (isNumeric(author)) {
-            //     JOptionPane.showMessageDialog(null, "Invalid search term for author. Please enter a string.", "Error", JOptionPane.ERROR_MESSAGE);
-            //     return;
-            // }
+                JOptionPane.showMessageDialog(addBookFrame, "Book added successfully!");
 
-            // String isbn = isbnField.getText();
-            // if (isbn.isEmpty()) {
-            //     JOptionPane.showMessageDialog(null, "ISBN cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-            //     return;
-            // }
-                    
-            // if (!isNumeric(isbn)) {
-            //     JOptionPane.showMessageDialog(null, "Invalid search term for ISBN. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
-            //     return;
-            // }
-
-            while (author.isEmpty() && option == JOptionPane.OK_OPTION){
-                JOptionPane.showMessageDialog(null, "Author cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-                
-                authorField.setText("");
-
-                inputPanel = new JPanel();
-                inputPanel.setLayout(new BorderLayout());
-                inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
-                inputPanel.add(authorField, BorderLayout.CENTER);
-                inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
-                inputPanel.add(isbnField, BorderLayout.SOUTH);
-            
-                option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-
-                author = authorField.getText();
-
-                if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION){
-                    return;
-                }
+                addBookFrame.dispose();
             }
-
-            
-            while (isNumeric(author) && option == JOptionPane.OK_OPTION){
-                JOptionPane.showMessageDialog(null, "Invalid search term for author. Please enter a string.", "Error", JOptionPane.ERROR_MESSAGE);
-                
-                authorField.setText("");
-
-                inputPanel = new JPanel();
-                inputPanel.setLayout(new BorderLayout());
-                inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
-                inputPanel.add(authorField, BorderLayout.CENTER);
-                inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
-                inputPanel.add(isbnField, BorderLayout.SOUTH);
-            
-                option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-
-                author = authorField.getText();
-
-                if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION){
-                    return;
-                }
-            }
+        });
     
-            String isbn = isbnField.getText();
-            while (isbn.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "ISBN cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-                
-                isbnField.setText("");
-                isbn = isbnField.getText();
+        addBookPanel.add(titleLabel);
+        addBookPanel.add(titleField);
+        addBookPanel.add(authorLabel);
+        addBookPanel.add(authorField);
+        addBookPanel.add(isbnLabel);
+        addBookPanel.add(isbnField);
+        addBookPanel.add(saveButton);
 
-                inputPanel = new JPanel();
-                inputPanel.setLayout(new BorderLayout());
-                inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
-                inputPanel.add(authorField, BorderLayout.CENTER);
-                inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
-                inputPanel.add(isbnField, BorderLayout.SOUTH);
-            
-                option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-
-                isbn = isbnField.getText();
-            
-                if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION){
-                    return;
-                }
-            }
-                    
-            while (!isNumeric(isbn)) {
-                JOptionPane.showMessageDialog(null, "Invalid search term for ISBN. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
-                
-                isbnField.setText("");
-                
-                inputPanel = new JPanel();
-                inputPanel.setLayout(new BorderLayout());
-                inputPanel.add(new JLabel("Author:"), BorderLayout.WEST);
-                inputPanel.add(authorField, BorderLayout.CENTER);
-                inputPanel.add(new JLabel("ISBN:"), BorderLayout.EAST);
-                inputPanel.add(isbnField, BorderLayout.SOUTH);
-            
-                option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
-                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
-
-                isbn = isbnField.getText();
-            
-                if(option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION){
-                    return;
-                }
-            }
-    
-            Book book = new Book(title, author, isbn);
-            library.addBook(book);
-            JOptionPane.showMessageDialog(null, "Book added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        }
+        addBookFrame.getContentPane().add(addBookPanel, BorderLayout.CENTER);
+        addBookFrame.pack();
+        addBookFrame.setVisible(true);
     }    
-
-    private SearchType getSelectedSearchType() {
-        String selectedSearchType = (String) searchTypeDropdown.getSelectedItem();
-
-        if (selectedSearchType.equals("Title")) {
-            return SearchType.TITLE;
-        } else if (selectedSearchType.equals("Author")) {
-            return SearchType.AUTHOR;
-        } else if (selectedSearchType.equals("ISBN")) {
-            return SearchType.ISBN;
-        } else {
-            throw new IllegalArgumentException("Invalid search type selected");
-        }
-    }
-
-    private boolean isNumeric(String str) {
-        return str.matches("-?\\d+(\\.\\d+)?");
-    }
 
     private void searchBook(String searchTerm, SearchType searchType) {
         if (searchTerm.isEmpty()) {
@@ -533,11 +443,77 @@ public class LibraryManagementUI {
         }
     }
 
+    private void addPatron() {
+        String name = JOptionPane.showInputDialog(frame, "Enter patron name:");
+        String contactInfo = JOptionPane.showInputDialog(frame, "Enter patron contact information:");
+        if (name != null && contactInfo != null) {
+            Patron patron = new Patron(name, contactInfo);
+            library.addPatron(patron);
+            JOptionPane.showMessageDialog(frame, "Patron added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void searchPatron() {
+        String contactInfo = JOptionPane.showInputDialog(frame, "Enter patron contact information:");
+        if (contactInfo != null) {
+            Patron patron = library.findPatron(contactInfo);
+            if (patron != null) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Patron Details:\n");
+                sb.append("Name: ").append(patron.getName()).append("\n");
+                sb.append("Contact Information: ").append(patron.getContactInfo()).append("\n");
+                sb.append("Borrowed Books:\n");
+                for (Book book : patron.getBorrowedBooks()) {
+                    sb.append(book.toString()).append("\n");
+                }
+                JOptionPane.showMessageDialog(frame, sb.toString(), "Patron Details", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Patron not found.", "Search Results", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+
+    private void removePatron() {
+        String contactInfo = JOptionPane.showInputDialog(frame, "Enter patron contact information:");
+        if (contactInfo != null) {
+            Patron patron = library.findPatron(contactInfo);
+            if (patron != null) {
+                library.removePatron(contactInfo);
+                JOptionPane.showMessageDialog(frame, "Patron removed successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Patron not found.", "Search Results", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+    }
+
+    
+    private SearchType getSelectedSearchType() {
+        String selectedSearchType = (String) searchTypeDropdown.getSelectedItem();
+
+        if (selectedSearchType.equals("Title")) {
+            return SearchType.TITLE;
+        } else if (selectedSearchType.equals("Author")) {
+            return SearchType.AUTHOR;
+        } else if (selectedSearchType.equals("ISBN")) {
+            return SearchType.ISBN;
+        } else {
+            throw new IllegalArgumentException("Invalid search type selected");
+        }
+    }
+
+    private boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?");
+    }
 
 
     public static void main(String[] args) {
         Library library = new Library();
-        LibraryManagementUI ui = new LibraryManagementUI(library);
-        ui.createAndShowUI();
+        // LibraryManagementUI ui = new LibraryManagementUI(library);
+        // ui.createAndShowUI();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new LibraryManagementUI(library).createAndShowUI();
+            }
+        });
     }
 }
