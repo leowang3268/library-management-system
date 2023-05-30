@@ -11,6 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import java.net.URL;
+import javax.swing.*;
+import java.awt.*;
+
 public class LibraryManagementUI {
 
     // private LibraryManagementSystem libraryManagementSystem;
@@ -35,7 +39,12 @@ public class LibraryManagementUI {
         bookTitleField = new JTextField(20);
         JButton addButton = new JButton("Add Book");
         JButton searchButton = new JButton("Search Book");
+        JButton borrowButton = new JButton("Borrow Book");
+        JButton returnButton = new JButton("Return Book");
+        JButton removeBookButton = new JButton("Remove Book");
 
+
+        
         searchTypeDropdown = new JComboBox<>();
         searchTypeDropdown.addItem("Title");
         searchTypeDropdown.addItem("Author");
@@ -60,6 +69,36 @@ public class LibraryManagementUI {
                 searchBook(searchTerm, searchType);
             }
         });
+
+        borrowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchTerm = bookTitleField.getText();
+                // SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
+                
+                borrowBook(searchTerm);
+            }
+        });
+
+        returnButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchTerm = bookTitleField.getText();
+                // SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
+                
+                returnBook(searchTerm);
+            }
+        });
+
+        removeBookButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchTerm = bookTitleField.getText();
+                SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
+                
+                removeBook(searchTerm, searchType);
+            }
+        });
         
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputPanel.add(bookTitleLabel, BorderLayout.WEST);
@@ -71,7 +110,10 @@ public class LibraryManagementUI {
         searchPanel.add(searchTypeDropdown, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.add(addButton, BorderLayout.CENTER);
+        buttonPanel.add(addButton, BorderLayout.NORTH);
+        buttonPanel.add(borrowButton, BorderLayout.WEST);
+        buttonPanel.add(returnButton, BorderLayout.SOUTH);
+        buttonPanel.add(removeBookButton, BorderLayout.EAST);
         
 
         panel.add(titleLabel, BorderLayout.NORTH);
@@ -105,6 +147,7 @@ public class LibraryManagementUI {
         int option = JOptionPane.showOptionDialog(null, inputPanel, "Add Book",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
     
+
         if (option == JOptionPane.OK_OPTION) {
             String author = authorField.getText();
             // if (author.isEmpty()) {
@@ -178,6 +221,7 @@ public class LibraryManagementUI {
                 JOptionPane.showMessageDialog(null, "ISBN cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
                 
                 isbnField.setText("");
+                isbn = isbnField.getText();
 
                 inputPanel = new JPanel();
                 inputPanel.setLayout(new BorderLayout());
@@ -269,21 +313,62 @@ public class LibraryManagementUI {
         // }
         
         // Display search results in a dialog box
-    if (!foundBooks.isEmpty()) {
-        StringBuilder resultMessage = new StringBuilder("Books found:\n");
-        for (Book book : foundBooks) {
-            resultMessage.append("Title: ").append(book.getTitle()).append("\n")
-                    .append("Author: ").append(book.getAuthor()).append("\n")
-                    .append("ISBN: ").append(book.getIsbn()).append("\n")
-                    .append("Availability: ").append(book.isAvailable() ? "Available" : "Not available").append("\n\n");
-        }
+        if (!foundBooks.isEmpty()) {
+            StringBuilder resultMessage = new StringBuilder("Books found:\n");
+            for (Book book : foundBooks) {
+                resultMessage.append("Title: ").append(book.getTitle()).append("\n")
+                        .append("Author: ").append(book.getAuthor()).append("\n")
+                        .append("ISBN: ").append(book.getIsbn()).append("\n")
+                        .append("Availability: ").append(book.isAvailable() ? "Available" : "Not available").append("\n\n");
+            }
 
-        JOptionPane.showMessageDialog(null, resultMessage.toString(), "Search Result", JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        JOptionPane.showMessageDialog(null, "No books found.", "Search Result", JOptionPane.WARNING_MESSAGE);
-    }
+            JOptionPane.showMessageDialog(null, resultMessage.toString(), "Search Result", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "No books found.", "Search Result", JOptionPane.WARNING_MESSAGE);
+        }
     }
     
+    private void borrowBook(String title){
+        if (title.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Title cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        library.borrowBook(title, title);
+        JOptionPane.showMessageDialog(null, "Borrow Book successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void returnBook(String title){
+        if (title.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Title cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        library.returnBook(title, title);
+        JOptionPane.showMessageDialog(null, "Return Book successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void removeBook(String title, SearchType searchType){
+        if (title.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Title cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (searchType != SearchType.ISBN) {
+            JOptionPane.showMessageDialog(null, "Please enter the ISBN of the book to remove", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // if title is not empty and searcg type is ISBN, check whether book is exist with ISBN.
+        List<Book> foundBooks = library.findBooks(title, searchType);
+        if(!foundBooks.isEmpty()){
+            library.removeBook(title); // remove by ISBN
+            JOptionPane.showMessageDialog(null, "Remove Book successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(null, "Book not found. Please retype the ISBN.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
 
     public static void main(String[] args) {
         Library library = new Library();
