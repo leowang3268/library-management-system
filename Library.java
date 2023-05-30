@@ -68,47 +68,48 @@ class Library {
 
     // Other operations
 
-    public void borrowBook(String isbn, String contactInfo) {
-        List<Book> books = findBooks(isbn, SearchType.ISBN);
-        Patron patron = findPatron(contactInfo);
+    // public boolean borrowBook(String isbn, String contactInfo) {
+    //     List<Book> books = findBooks(isbn, SearchType.ISBN);
+    //     Patron patron = findPatron(contactInfo);
     
-        boolean bookBorrowed = false;
+    //     boolean bookBorrowed = false;
     
-        for (Book book : books) {
-            if (book.isAvailable() && patron != null) {
-                book.setAvailable(false);
-                patron.getBorrowedBooks().add(book);
-                bookBorrowed = true;
-            }
-        }
+    //     for (Book book : books) {
+    //         if (book.isAvailable() && patron != null) {
+    //             book.setAvailable(false);
+    //             patron.getBorrowedBooks().add(book);
+    //             bookBorrowed = true;
+    //         }
+    //     }
     
-        if (bookBorrowed) {
-            System.out.println("Book successfully borrowed.");
-        } else {
-            System.out.println("No available books found or patron not found.");
-        }
-    }
+    //     return bookBorrowed;
+    //     // if (bookBorrowed) {
+    //     //     System.out.println("Book successfully borrowed.");
+    //     // } else {
+    //     //     System.out.println("No available books found or patron not found.");
+    //     // }
+    // }
 
-    public void returnBook(String isbn, String contactInfo) {
-        List<Book> books = findBooks(isbn, SearchType.ISBN);
-        Patron patron = findPatron(contactInfo);
+    // public void returnBook(String isbn, String contactInfo) {
+    //     List<Book> books = findBooks(isbn, SearchType.ISBN);
+    //     Patron patron = findPatron(contactInfo);
     
-        boolean bookReturned = false;
+    //     boolean bookReturned = false;
     
-        for (Book book : books) {
-            if (!book.isAvailable() && patron != null && patron.getBorrowedBooks().contains(book)) {
-                book.setAvailable(true);
-                patron.getBorrowedBooks().remove(book);
-                bookReturned = true;
-            }
-        }
+    //     for (Book book : books) {
+    //         if (!book.isAvailable() && patron != null && patron.getBorrowedBooks().contains(book)) {
+    //             book.setAvailable(true);
+    //             patron.getBorrowedBooks().remove(book);
+    //             bookReturned = true;
+    //         }
+    //     }
     
-        if (bookReturned) {
-            System.out.println("Book successfully returned.");
-        } else {
-            System.out.println("No borrowed books found or patron not found.");
-        }
-    }
+    //     if (bookReturned) {
+    //         System.out.println("Book successfully returned.");
+    //     } else {
+    //         System.out.println("No borrowed books found or patron not found.");
+    //     }
+    // }
     
 }
 

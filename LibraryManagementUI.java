@@ -76,7 +76,7 @@ public class LibraryManagementUI {
                 String searchTerm = bookTitleField.getText();
                 // SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
                 
-                borrowBook(searchTerm);
+                borrowBook();
             }
         });
 
@@ -86,7 +86,7 @@ public class LibraryManagementUI {
                 String searchTerm = bookTitleField.getText();
                 // SearchType searchType = getSelectedSearchType(); // Implement this method to retrieve the selected search type
                 
-                returnBook(searchTerm);
+                returnBook();
             }
         });
 
@@ -328,24 +328,189 @@ public class LibraryManagementUI {
         }
     }
     
-    private void borrowBook(String title){
-        if (title.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Title cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+    private void borrowBook() {
+        Object[] options = {"Title", "ISBN"};
+        int choice = JOptionPane.showOptionDialog(null, "Choose search method:", "Borrow Book",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+    
+        if (choice == JOptionPane.CLOSED_OPTION) {
+            return; // Return to main window if "Cancel" is clicked
+        }
+    
+        String searchValue = "";
+        SearchType searchType;
+    
+        while (true) {
+            if (choice == 0) {
+                searchType = SearchType.TITLE;
+                searchValue = JOptionPane.showInputDialog(null, "Enter book title:");
+    
+                if (searchValue == null || searchValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue; // Retry input
+                }
+            } else {
+                searchType = SearchType.ISBN;
+                searchValue = JOptionPane.showInputDialog(null, "Enter book ISBN:");
+    
+                if (searchValue == null || searchValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue; // Retry input
+                }
+            }
+    
+            break; // Exit the loop if valid input is provided
+        }
+    
+        List<Book> books = library.findBooks(searchValue, searchType);
+    
+        if (books.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No books available with the provided search value.", "Unavailable", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        library.borrowBook(title, title);
-        JOptionPane.showMessageDialog(null, "Borrow Book successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+    
+        JTextField contactInfoField = new JTextField(20);
+    
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new BorderLayout());
+        inputPanel.add(new JLabel("Contact Information:"), BorderLayout.WEST);
+        inputPanel.add(contactInfoField, BorderLayout.CENTER);
+    
+        int option = JOptionPane.showOptionDialog(null, inputPanel, "Borrow Book",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+    
+        if (option == JOptionPane.CANCEL_OPTION) {
+            return; // Return to main window if "Cancel" is clicked
+        }
+    
+        String contactInfo = contactInfoField.getText();
+    
+        while (contactInfo.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Contact information cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            option = JOptionPane.showOptionDialog(null, inputPanel, "Borrow Book",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+    
+            if (option == JOptionPane.CANCEL_OPTION) {
+                return; // Return to main window if "Cancel" is clicked
+            }
+    
+            contactInfo = contactInfoField.getText();
+        }
+    
+        Patron patron = library.findPatron(contactInfo);
+        boolean bookBorrowed = false;
+    
+        for (Book book : books) {
+            if (book.isAvailable() && patron != null) {
+                book.setAvailable(false);
+                patron.getBorrowedBooks().add(book);
+                bookBorrowed = true;
+                break; // Exit the loop after borrowing the first available book
+            }
+        }
+    
+        if (bookBorrowed) {
+            JOptionPane.showMessageDialog(null, "Book borrowed successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            if (patron == null) {
+                JOptionPane.showMessageDialog(null, "Patron not found with the provided contact information.", "Not Found", JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "No available books found.", "Unavailable", JOptionPane.WARNING_MESSAGE);
+            }
+        }
     }
-
-    private void returnBook(String title){
-        if (title.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Title cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+    
+    private void returnBook() {
+        Object[] options = {"Title", "ISBN"};
+        int choice = JOptionPane.showOptionDialog(null, "Choose search method:", "Return Book",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+    
+        if (choice == JOptionPane.CLOSED_OPTION) {
+            return; // Return to main window if "Cancel" is clicked
+        }
+    
+        String searchValue = "";
+        SearchType searchType;
+    
+        while (true) {
+            if (choice == 0) {
+                searchType = SearchType.TITLE;
+                searchValue = JOptionPane.showInputDialog(null, "Enter book title:");
+    
+                if (searchValue == null || searchValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue; // Retry input
+                }
+            } else {
+                searchType = SearchType.ISBN;
+                searchValue = JOptionPane.showInputDialog(null, "Enter book ISBN:");
+    
+                if (searchValue == null || searchValue.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Search value cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue; // Retry input
+                }
+            }
+    
+            break; // Exit the loop if valid input is provided
+        }
+    
+        List<Book> books = library.findBooks(searchValue, searchType);
+    
+        if (books.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No books found with the provided search value.", "Not Found", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        library.returnBook(title, title);
-        JOptionPane.showMessageDialog(null, "Return Book successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+    
+        JTextField contactInfoField = new JTextField(20);
+    
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new BorderLayout());
+        inputPanel.add(new JLabel("Contact Information:"), BorderLayout.WEST);
+        inputPanel.add(contactInfoField, BorderLayout.CENTER);
+    
+        int option = JOptionPane.showOptionDialog(null, inputPanel, "Return Book",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+    
+        if (option == JOptionPane.CANCEL_OPTION) {
+            return; // Return to main window if "Cancel" is clicked
+        }
+    
+        String contactInfo = contactInfoField.getText();
+    
+        while (contactInfo.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Contact information cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            option = JOptionPane.showOptionDialog(null, inputPanel, "Return Book",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+    
+            if (option == JOptionPane.CANCEL_OPTION) {
+                return; // Return to main window if "Cancel" is clicked
+            }
+    
+            contactInfo = contactInfoField.getText();
+        }
+    
+        Patron patron = library.findPatron(contactInfo);
+        boolean bookReturned = false;
+    
+        for (Book book : books) {
+            if (!book.isAvailable() && patron != null && patron.getBorrowedBooks().contains(book)) {
+                book.setAvailable(true);
+                patron.getBorrowedBooks().remove(book);
+                bookReturned = true;
+            }
+        }
+    
+        if (bookReturned) {
+            JOptionPane.showMessageDialog(null, "Book returned successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            if (books.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No books found with the provided search value.", "Not Found", JOptionPane.WARNING_MESSAGE);
+            } else if (patron == null) {
+                JOptionPane.showMessageDialog(null, "Patron not found with the provided contact information.", "Not Found", JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "No borrowed books found.", "Unavailable", JOptionPane.WARNING_MESSAGE);
+            }
+        }
     }
 
     private void removeBook(String title, SearchType searchType){
