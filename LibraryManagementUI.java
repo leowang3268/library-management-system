@@ -198,7 +198,7 @@ public class LibraryManagementUI {
 
     private void searchBook(/*String searchTerm, SearchType searchType*/) {
         Object[] options = {"Title", "ISBN"};
-        int choice = JOptionPane.showOptionDialog(null, "Choose search method:", "Borrow Book",
+        int choice = JOptionPane.showOptionDialog(null, "Choose search method:", "Search Book",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
     
         if (choice == JOptionPane.CLOSED_OPTION) {
